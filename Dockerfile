@@ -33,5 +33,5 @@ WORKDIR /my_application
 
 # Set the default command to execute
 # when creating a new container 
-CMD ./gradlew :server:clean :server:build :server:deploy -x :client:test && java -jar server/build/deploy/server-0.0.1-jar-with-dependencies.jar
+CMD ./gradlew :server:clean :server:build :server:deploy && java -jar server/build/deploy/server-0.0.1-jar-with-dependencies.jar
 
