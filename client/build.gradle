@@ -1,0 +1,62 @@
+hello.doLast {
+	println "- I'm the client side."
+}
+
+apply plugin: 'gradlefx'
+output 				= "WorkClient"
+packaging 			= "swf"
+type 				= 'swf'
+version             = '0.0.1'
+group               = 'com.king.worktest.client'
+mainClass 			= 'com/king/worktest/client/Client.as' // http://support.gradlefx.org/discussions/problems/16-gradlefx-for-non-flex-project
+
+// SPECIFY Project Layout
+srcDirs = [
+	'src'
+]
+
+resourceDirs = [
+	'assets',
+	'../shared/resources'
+]
+
+testDirs = [
+	'test/src'
+]
+
+flexHome = System.getenv()['FLEX_SDK_LOCATION'] //take a custom environment variable which contains the Flex SDK location
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath group: 'org.gradlefx', name: 'gradlefx', version: '0.8.1'
+    }
+}
+
+task copyResources (type: Copy){
+	description "Copy resources into the generated folder."    
+	from '../shared/resources/levels'
+	into 'generated'
+}
+
+compileFlex.dependsOn copyResources
+
+clean {
+	delete 'generated'
+	delete 'doc'
+}
+
+dependencies {
+    test files(project.file('libs/flexUnitTasks-4.1.0-8.jar').absolutePath,
+			   project.file('libs/flexunit-4.1.0-8-flex_4.1.0.16076.swc').absolutePath,
+			   project.file('libs/flexunit-cilistener-4.1.0-8-4.1.0.16076.swc').absolutePath,
+			   project.file('libs/flexunit-uilistener-4.1.0-8-4.1.0.16076.swc').absolutePath)
+}
+
+jvmArguments = [
+    '-Xmx2048m',
+    '-Xms512m' 
+]

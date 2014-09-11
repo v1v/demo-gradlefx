@@ -1,0 +1,151 @@
+hello.doLast {
+	println "- I'm the server side."
+}
+
+apply plugin: 'java'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+// PROPERTIES
+mainClassName       = 'com.king.worktest.Starter'
+version             = '0.0.1'
+group               = 'com.king.worktest'
+sourceCompatibility = "1.6"
+targetCompatibility = "1.6"
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDirs = ['web', 'conf', 'bin', '../shared/resources']
+   		}
+   	}
+   	test {
+   		java {
+			srcDir 'test/src'
+		}
+   	}
+}
+
+configurations{
+  provided
+  compile.extendsFrom provided
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.eclipse.jetty:jetty-server:9.2.2.v20140723'
+    compile 'org.eclipse.jetty:jetty-webapp:9.2.2.v20140723'
+    compile 'org.apache.tomcat:tomcat-jasper:7.0.34'
+    compile 'ch.qos.logback:logback-core:1.0.13'
+    compile 'org.slf4j:slf4j-simple:1.7.5'
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile 'com.google.code.gson:gson:2.2.4'
+    testCompile 'se.mockachino:mockachino:0.6.0'
+    testCompile 'junit:junit:4.10'
+    provided project(':client')
+}
+
+// A better logging way of reporting test status by commandline without running -i
+test {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+}
+
+// JAR
+def customManifest = manifest {
+    attributes("Built-With": "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}")
+    attributes("Created-By": 'Java ' + System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')')
+    attributes("Source-Compatibility": project.sourceCompatibility)
+    attributes("Target-Compatibility": project.targetCompatibility)
+    attributes("Implementation-Title": "Server")
+    attributes("Implementation-Vendor": project.group)
+    attributes("Implementation-Version": project.version)
+    attributes("Main-Class": project.mainClassName)
+    attributes("Class-Path": configurations.compile.collect { it.getName() }.join(' ') )
+}
+
+def mManifest = {
+    from(customManifest)
+}
+
+task fatJar(type: Jar, dependsOn: jar) {    
+  description "Assembles a fatjar archive containing the main classes and dependencies."
+  baseName = project.name
+
+  def deps = configurations.runtime - configurations.provided
+  def depClasses = { deps.collect { it.isDirectory() ? it : zipTree(it) } + sourceSets.main.output }
+  from(depClasses) {
+      exclude 'META-INF/**'
+      exclude 'about.html'
+  }
+	classifier = 'jar-with-dependencies'
+	extension 'jar'
+  manifest mManifest    
+}
+
+task sourcesJar(type: Jar, dependsOn:classes) { 
+  description "Assembles a jar archive containing the main sources."
+  classifier = 'sources' 
+  from sourceSets.main.allSource  
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  description "Assembles a jar archive containing the main JavaDoc."
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
+artifacts {
+  archives fatJar 
+  archives javadocJar 
+	archives sourcesJar
+}
+
+// copy dependencies from the client side
+task copyClientDependency (type: Copy){
+    description "Copy Client artifacts."
+    from configurations.provided
+    into 'web'
+}
+
+processResources.dependsOn copyClientDependency
+
+clean {
+  delete 'web/WorkClient.swf'
+}
+
+// DEPLOYMENT process
+// TODO :  I don't like this way of copying stuff...
+task copyBinResources (type: Copy){
+  description "Copy resources to the deploy folder"
+  from 'bin'
+  into "${buildDir}/deploy/bin"
+}
+task copySharedResources (type: Copy){
+  description "Copy resources to the deploy folder"
+  from '../shared/resources'
+  into "${buildDir}/deploy"
+}
+task copyConfResources (type: Copy){
+  description "Copy resources to the deploy folder"
+  from 'conf'
+  into "${buildDir}/deploy/conf"
+}
+task copyWebResources (type: Copy){
+  description "Copy resources to the deploy folder"
+  from 'web'
+  into "${buildDir}/deploy/web"
+}
+task deploy (type: Copy, dependsOn: [copyWebResources, copyConfResources, copySharedResources, copyBinResources, build]){
+  from fatJar
+  into "${buildDir}/deploy"
+}
