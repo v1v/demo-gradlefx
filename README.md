@@ -11,20 +11,25 @@ Build process
 
 Deployment process
 
-1) Manual steps
-	export JAVA_HOME=
-	export FLEX_SDK_LOCATION=/Users/v1v/Workspaces/flex_sdk_4.6
-	export FLEX_HOME=/Users/v1v/Workspaces/flex_sdk_4.6
-	export FLASH_PLAYER_EXE=/Users/v1v/Workspaces/FlashPlayerDebugger.app/Contents/MacOS/Flash\ Player\ Debugger
+	1) Manual steps
+		export JAVA_HOME=
+		export FLEX_SDK_LOCATION=/Users/v1v/Workspaces/flex_sdk_4.6
+		export FLEX_HOME=/Users/v1v/Workspaces/flex_sdk_4.6
+		export FLASH_PLAYER_EXE=/Users/v1v/Workspaces/FlashPlayerDebugger.app/Contents/MacOS/Flash\ Player\ Debugger
 
-	gradlew clean build deploy
-	java -jar server/build/deploy/server-<VERSION>-jar-with-dependencies.jar
-	sh server/build/deploy/start.sh
+		gradlew clean build deploy
+		cd server/build/deploy/
+		java -jar server-<VERSION>-jar-with-dependencies.jar
+		sh server/build/deploy/start.sh
 
-2) Using docker
+	2) Using docker
 
-	docker build -t <yourUserName>/demo-gradlefx
-	docker run -i -t <yourUserName>/demo-gradlefx
+		gradlew clean build
+		docker build -t <yourUserName>/demo-gradlefx
+		docker run -i -t -p 8081:8081 <yourUserName>/demo-gradlefx
+		ip_webapp=$(boot2docker ip)
+		open http://${ip_webapp}/8081
 
-	I'm afraid docker doesn´t work for testing FLEX. Some x11 issues
+		NOTE: I´ve not found the way of running docker with X11 for testing the client side in the container
+
 

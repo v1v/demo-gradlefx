@@ -1,7 +1,3 @@
-hello.doLast {
-	println "- I'm the client side."
-}
-
 apply plugin: 'gradlefx'
 output 				= "WorkClient"
 packaging 			= "swf"
@@ -50,13 +46,9 @@ clean {
 }
 
 dependencies {
+    
     test files(project.file('libs/flexUnitTasks-4.1.0-8.jar').absolutePath,
 			   project.file('libs/flexunit-4.1.0-8-flex_4.1.0.16076.swc').absolutePath,
 			   project.file('libs/flexunit-cilistener-4.1.0-8-4.1.0.16076.swc').absolutePath,
 			   project.file('libs/flexunit-uilistener-4.1.0-8-4.1.0.16076.swc').absolutePath)
 }
-
-jvmArguments = [
-    '-Xmx2048m',
-    '-Xms512m' 
-]
