@@ -41,14 +41,15 @@ repositories {
 }
 
 dependencies {
-    compile 'org.eclipse.jetty:jetty-server:9.2.2.v20140723'
-    compile 'org.eclipse.jetty:jetty-webapp:9.2.2.v20140723'
+    compile 'org.eclipse.jetty:jetty-server:9.2.1.v20140609'
+    compile 'org.eclipse.jetty:jetty-webapp:9.2.1.v20140609'
     compile 'org.apache.tomcat:tomcat-jasper:7.0.34'
     compile 'ch.qos.logback:logback-core:1.0.13'
     compile 'org.slf4j:slf4j-simple:1.7.5'
     compile 'com.google.code.gson:gson:2.2.4'
     testCompile 'se.mockachino:mockachino:0.6.0'
     testCompile 'junit:junit:4.10'
+    runtime 'org.eclipse.jetty:apache-jsp:9.2.1.v20140609'
     // remove dependency: since cannot use Dockerprovided project(':client')
 }
 
@@ -128,7 +129,7 @@ clean {
 task copyBinResources (type: Copy){
   description "Copy resources to the deploy folder"
   from 'bin'
-  into "${buildDir}/deploy/bin"
+  into "${buildDir}/deploy"
 }
 task copySharedResources (type: Copy){
   description "Copy resources to the deploy folder"
@@ -145,7 +146,12 @@ task copyWebResources (type: Copy){
   from 'web'
   into "${buildDir}/deploy/web"
 }
-task deploy (type: Copy, dependsOn: [copyWebResources, copyConfResources, copySharedResources, copyBinResources, build]){
-  from fatJar
+task copyDependencies (type: Copy){
+  description "Copy resources to the deploy folder"
+  from configurations.runtime
+  into "${buildDir}/deploy/libs"
+}
+task deploy (type: Copy, dependsOn: [copyWebResources, copyConfResources, copySharedResources, copyBinResources, copyDependencies, build]){
+  from jar
   into "${buildDir}/deploy"
 }
