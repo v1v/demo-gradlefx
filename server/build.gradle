@@ -50,7 +50,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     testCompile 'se.mockachino:mockachino:0.6.0'
     testCompile 'junit:junit:4.10'
-    provided project(':client')
+    // remove dependency: since cannot use Dockerprovided project(':client')
 }
 
 // A better logging way of reporting test status by commandline without running -i
@@ -113,7 +113,8 @@ artifacts {
 // copy dependencies from the client side
 task copyClientDependency (type: Copy){
     description "Copy Client artifacts."
-    from configurations.provided
+    //from configurations.provided  in order to allow Docker execution without X11
+    from '../client/build/WorkClient.swf'
     into 'web'
 }
 
