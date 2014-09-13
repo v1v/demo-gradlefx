@@ -19,8 +19,7 @@ Deployment process
 
 		gradlew clean build deploy
 		cd server/build/deploy/
-		java -jar server-<VERSION>-jar-with-dependencies.jar
-		sh server/build/deploy/start.sh
+		sh start.sh
 
 	2) Using docker
 
