@@ -28,7 +28,7 @@ sourceSets {
    		java {
 			srcDir 'test/src'
 		}
-   	}
+	}
 }
 
 configurations{
@@ -41,15 +41,22 @@ repositories {
 }
 
 dependencies {
+
+    compile 'org.eclipse.jetty:jetty-io:9.2.1.v20140609'
     compile 'org.eclipse.jetty:jetty-server:9.2.1.v20140609'
     compile 'org.eclipse.jetty:jetty-webapp:9.2.1.v20140609'
-    compile 'org.apache.tomcat:tomcat-jasper:7.0.34'
+    compile 'org.eclipse.jetty:jetty-servlet:9.2.1.v20140609'
+    compile 'org.eclipse.jetty:jetty-util:9.2.1.v20140609'
+    compile 'org.eclipse.jetty:jetty-webapp:9.2.1.v20140609'
+    runtime 'org.eclipse.jetty:apache-jsp:9.2.1.v20140609'
+    compile ('org.apache.tomcat:tomcat-jasper:7.0.34') {
+      transitive = false
+    }
     compile 'ch.qos.logback:logback-core:1.0.13'
     compile 'org.slf4j:slf4j-simple:1.7.5'
     compile 'com.google.code.gson:gson:2.2.4'
     testCompile 'se.mockachino:mockachino:0.6.0'
     testCompile 'junit:junit:4.10'
-    runtime 'org.eclipse.jetty:apache-jsp:9.2.1.v20140609'
     // remove dependency: since cannot use Dockerprovided project(':client')
 }
 
@@ -105,7 +112,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 artifacts {
-  archives fatJar 
+  //archives fatJar 
   archives javadocJar 
 	archives sourcesJar
 }
