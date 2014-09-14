@@ -7,8 +7,15 @@ Build process
 
 	gradlew clean build
 
+	mvn clean package
+
 Execution process
 
+	cd build/deploy
+	sh start.sh
+
+	cd target/deploy
+	sh start.sh
 
 Pipeline:
 
@@ -25,12 +32,7 @@ Pipeline:
 	    }
 	}
 	apply plugin: 'eu.appsatori.fatjar'
-	{code}	
-
- Replace bin/start.sh in order to use
-
-	{code} java -jar server-0.0.1-jar-with-dependencies.jar {code}
-
+	{code}
 
 Further reading:
 
