@@ -104,6 +104,17 @@
     <finalName>server</finalName>
     <sourceDirectory>src</sourceDirectory>
     <testSourceDirectory>test</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>${basedir}/conf</directory>
+      </resource>
+      <resource>
+        <directory>${basedir}/web</directory>
+      </resource>
+      <resource>
+        <directory>../shared/resources</directory>
+      </resource>
+    </resources>
     <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -171,8 +182,26 @@
                 </configuration>
               </execution>
             </executions>
-          </plugin>         
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>2.5</version>
+            <configuration>
+                <archive>
+                  <manifestEntries>
+                    <url>${project.url}</url>
+                  </manifestEntries>
+                  <manifest>
+                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>            
+                    <addClasspath>true</addClasspath>
+                    <mainClass>com.king.worktest.Starter</mainClass>
+                    <classpathPrefix>libs/</classpathPrefix>
+                  </manifest>
+                </archive>
+            </configuration>
+        </plugin>
     </plugins>
-    <!-- TODO: include resources as part of the classpath -->
   </build>
 </project>
